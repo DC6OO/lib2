@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BIT Library</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .year-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .year-btn {
+      padding: 10px 22px;
+      border: 2px solid #007bff;
+      background: white;
+      color: #007bff;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .year-btn:hover {
+      background: #e8f2ff;
+    }
+
+    .year-btn.active {
+      background: #007bff;
+      color: white;
+    }
+
+    .upload-box {
+      border: 2px dashed #007bff;
+      padding: 40px;
+      text-align: center;
+      border-radius: 10px;
+      background: #f8fbff;
+      margin-bottom: 30px;
+    }
+
+    input[type="file"] {
+      margin-top: 15px;
+    }
+
+    .library-list {
+      margin-top: 20px;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .file-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .file-type {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .download-btn,
+    .delete-btn {
+      padding: 8px 15px;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .download-btn {
+      background: #007bff;
+    }
+
+    .download-btn:hover {
+      background: #0056b3;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+    }
+
+    .delete-btn:hover {
+      background: #b02a37;
+    }
+
+    .empty-msg {
+      color: #888;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar" aria-label="Main">
+      <a class="nav-brand" href="index.html">Digital Library</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="soft.html">SOFTWARE</a>
+        <a href="en.html">ENGINEERING</a>
+        <a href="BIT.html">BIT</a>
+        <a href="sybe.html">CYBER SECURITY</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>BIT Library</h1>
+
+    <div class="year-buttons">
+      <button type="button" class="year-btn active" data-year="1">1st Year</button>
+      <button type="button" class="year-btn" data-year="2">2nd Year</button>
+      <button type="button" class="year-btn" data-year="3">3rd Year</button>
+      <button type="button" class="year-btn" data-year="4">4th Year</button>
+    </div>
+
+    <div class="upload-box">
+      <p>Upload PDF, Word, or PowerPoint files</p>
+      <input 
+        type="file" 
+        id="fileUpload" 
+        accept=".pdf,.doc,.docx,.ppt,.pptx" 
+        multiple
+      />
+    </div>
+
+    <div class="library-list" id="libraryList">
+      <h2>Uploaded Documents — <span id="yearLabel">1st Year</span></h2>
+      <div id="fileItems"></div>
+    </div>
+  </div>
+
+  <script src="nav.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="storage.js"></script>
+  <script>
+    const LIBRARY = "BIT";
+    const fileUpload = document.getElementById("fileUpload");
+    const fileItems = document.getElementById("fileItems");
+    const yearLabel = document.getElementById("yearLabel");
+    const yearButtons = document.querySelectorAll(".year-btn");
+
+    const yearNames = {
+      "1": "1st Year",
+      "2": "2nd Year",
+      "3": "3rd Year",
+      "4": "4th Year"
+    };
+
+    let selectedYear = "1";
+
+    async function renderFiles() {
+      fileItems.innerHTML = "";
+      yearLabel.textContent = yearNames[selectedYear];
+
+      const files = await getFiles(LIBRARY, selectedYear);
+
+      if (files.length === 0) {
+        fileItems.innerHTML = '<p class="empty-msg">No documents uploaded for this year yet.</p>';
+        return;
+      }
+
+      for (const file of files) {
+        const fileItem = document.createElement("div");
+        fileItem.classList.add("file-item");
+        fileItem.innerHTML = `
+          <div>
+            <div class="file-name">${file.name}</div>
+            <div class="file-type">${file.type || "Document File"}</div>
+          </div>
+          <div class="file-actions">
+            <a href="${file.url}" download="${file.name}" class="download-btn">Download</a>
+            <button type="button" class="delete-btn" data-id="${file.id}">Delete</button>
+          </div>
+        `;
+        fileItems.appendChild(fileItem);
+      }
+
+      fileItems.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            await deleteFile(btn.dataset.id);
+            renderFiles();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    yearButtons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        yearButtons.forEach((b) => b.classList.remove("active"));
+        this.classList.add("active");
+        selectedYear = this.dataset.year;
+        renderFiles();
+      });
+    });
+
+    fileUpload.addEventListener("change", async function () {
+      try {
+        for (const file of this.files) {
+          await saveFile(LIBRARY, selectedYear, file);
+        }
+        this.value = "";
+        renderFiles();
+      } catch (err) {
+        alert(err.message + "\n\nCheck your Supabase setup (run supabase-setup.sql in the SQL Editor).");
+      }
+    });
+
+    renderFiles().catch((err) => {
+      fileItems.innerHTML =
+        `<p class="empty-msg">Could not load files from Supabase. ${err.message || ""} Run <code>supabase-setup.sql</code> in the Supabase SQL Editor if you have not yet.</p>`;
+    });
+  </script>
+
+</body>
+</html>

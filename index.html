@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Library</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .home-hero {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 16px;
+      text-align: center;
+    }
+
+    .home-hero h1 {
+      color: #222;
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+
+    .home-hero p {
+      color: #555;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      margin: 0 auto 28px;
+      max-width: 36rem;
+    }
+
+    .home-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .home-links a {
+      display: block;
+      padding: 18px 14px;
+      background: #222;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 10px;
+      border-bottom: 3px solid #ffc107;
+    }
+
+    .home-links a:hover,
+    .home-links a:focus-visible {
+      background: #333;
+      outline: none;
+    }
+
+    @media (max-width: 768px) {
+      .home-hero {
+        margin: 28px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar" aria-label="Main">
+      <a class="nav-brand" href="index.html">Digital Library</a>
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Open menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="soft.html">SOFTWARE</a>
+        <a href="en.html">ENGINEERING</a>
+        <a href="BIT.html">BIT</a>
+        <a href="sybe.html">CYBER SECURITY</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="home-hero">
+    <h1>Digital Library</h1>
+    <p>Choose a department to browse and upload course documents.</p>
+    <div class="home-links">
+      <a href="soft.html">Software</a>
+      <a href="en.html">Engineering</a>
+      <a href="BIT.html">BIT</a>
+      <a href="sybe.html">Cyber Security</a>
+    </div>
+  </main>
+
+  <script src="nav.js"></script>
+</body>
+</html>
