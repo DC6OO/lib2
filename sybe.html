@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CYBER Library</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .upload-box {
+      border: 2px dashed #007bff;
+      padding: 40px;
+      text-align: center;
+      border-radius: 10px;
+      background: #f8fbff;
+      margin-bottom: 30px;
+    }
+
+    input[type="file"] {
+      margin-top: 15px;
+    }
+
+    .library-list {
+      margin-top: 20px;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .file-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .file-type {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .download-btn {
+      padding: 8px 15px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .download-btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Digital Library</h1>
+
+    <div class="upload-box">
+      <p>Upload PDF, Word, or PowerPoint files</p>
+      <input 
+        type="file" 
+        id="fileUpload" 
+        accept=".pdf,.doc,.docx,.ppt,.pptx" 
+        multiple
+      />
+    </div>
+
+    <div class="library-list" id="libraryList">
+      <h2>Uploaded Documents</h2>
+    </div>
+  </div>
+
+  <script>
+    const fileUpload = document.getElementById("fileUpload");
+    const libraryList = document.getElementById("libraryList");
+
+    fileUpload.addEventListener("change", function () {
+      const files = this.files;
+
+      for (let file of files) {
+        const fileURL = URL.createObjectURL(file);
+
+        const fileItem = document.createElement("div");
+        fileItem.classList.add("file-item");
+
+        fileItem.innerHTML = `
+          <div>
+            <div class="file-name">${file.name}</div>
+            <div class="file-type">${file.type || "Document File"}</div>
+          </div>
+          <a href="${fileURL}" download="${file.name}" class="download-btn">
+            Download
+          </a>
+        `;
+
+        libraryList.appendChild(fileItem);
+      }
+    });
+  </script>
+
+</body>
+</html>
