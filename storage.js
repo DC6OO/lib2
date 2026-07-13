@@ -2,15 +2,29 @@ const SUPABASE_URL = "https://mwulewothbgkhhazfrtq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_TEH_6lJ1_7j6JTX8T9mfCg_bF6aPZA-";
 const BUCKET = "library-files";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let client = null;
+
+function getClient() {
+  if (client) return client;
+
+  const lib = window.supabase;
+  if (!lib || typeof lib.createClient !== "function") {
+    throw new Error(
+      "Supabase library failed to load. Check your internet connection and refresh the page."
+    );
+  }
+
+  client = lib.createClient(SUPABASE_URL, SUPABASE_KEY);
+  return client;
+}
 
 function publicUrl(path) {
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  const { data } = getClient().storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }
 
 async function getFiles(library, year) {
-  const { data, error } = await supabase
+  const { data, error } = await getClient()
     .from("documents")
     .select("id, name, type, storage_path")
     .eq("library", library)
@@ -28,6 +42,7 @@ async function getFiles(library, year) {
 }
 
 async function saveFile(library, year, file) {
+  const supabase = getClient();
   const id = crypto.randomUUID();
   const safeName = file.name.replace(/[^\w.\-()+ ]/g, "_");
   const storagePath = `${library}/year-${year}/${id}-${safeName}`;
@@ -59,6 +74,8 @@ async function saveFile(library, year, file) {
 }
 
 async function deleteFile(id) {
+  const supabase = getClient();
+
   const { data: row, error: fetchError } = await supabase
     .from("documents")
     .select("storage_path")
@@ -80,3 +97,7 @@ async function deleteFile(id) {
 
   if (deleteError) throw new Error(deleteError.message);
 }
+
+window.getFiles = getFiles;
+window.saveFile = saveFile;
+window.deleteFile = deleteFile;
