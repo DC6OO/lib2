@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Books</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .search-box {
+      margin-bottom: 24px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    }
+
+    .upload-box {
+      border: 2px dashed #007bff;
+      padding: 40px;
+      text-align: center;
+      border-radius: 10px;
+      background: #f8fbff;
+      margin-bottom: 30px;
+    }
+
+    .upload-box.hidden {
+      display: none;
+    }
+
+    .admin-only-note {
+      display: none;
+      margin-bottom: 24px;
+      padding: 12px 14px;
+      background: #fff8e6;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      color: #666;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .admin-only-note.show {
+      display: block;
+    }
+
+    input[type="file"] {
+      margin-top: 15px;
+    }
+
+    .library-list {
+      margin-top: 20px;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .file-info {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: bold;
+      color: #333;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .file-type {
+      color: #666;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .file-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .download-btn,
+    .delete-btn {
+      padding: 8px 15px;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .download-btn {
+      background: #007bff;
+    }
+
+    .download-btn:hover {
+      background: #0056b3;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+    }
+
+    .delete-btn:hover {
+      background: #b02a37;
+    }
+
+    .empty-msg {
+      color: #888;
+      font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .file-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .file-actions {
+        width: 100%;
+      }
+
+      .file-actions .download-btn,
+      .file-actions .delete-btn {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar" aria-label="Main">
+      <a class="nav-brand" href="index.html">Digital Library</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="soft.html">SOFTWARE</a>
+        <a href="en.html">ENGINEERING</a>
+        <a href="BIT.html">BIT</a>
+        <a href="sybe.html">CYBER SECURITY</a>
+        <a href="books.html">BOOKS</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>Books</h1>
+
+    <div class="search-box">
+      <input
+        type="search"
+        id="fileSearch"
+        placeholder="Search books by name..."
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="admin-only-note" id="adminOnlyNote">
+      Log in as admin to upload or delete books.
+    </div>
+
+    <div class="upload-box" id="uploadBox">
+      <p>Upload PDF, Word, or PowerPoint books</p>
+      <input 
+        type="file" 
+        id="fileUpload" 
+        accept=".pdf,.doc,.docx,.ppt,.pptx" 
+        multiple
+      />
+    </div>
+
+    <div class="library-list" id="libraryList">
+      <h2>Available Books</h2>
+      <div id="fileItems"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="storage.js"></script>
+  <script src="nav.js"></script>
+  <script>
+    const LIBRARY = "books";
+    const BOOK_YEAR = "all";
+    const fileUpload = document.getElementById("fileUpload");
+    const fileItems = document.getElementById("fileItems");
+    const fileSearch = document.getElementById("fileSearch");
+    const uploadBox = document.getElementById("uploadBox");
+    const adminOnlyNote = document.getElementById("adminOnlyNote");
+
+    let searchTimer = null;
+
+    async function renderFiles() {
+      fileItems.innerHTML = "";
+
+      await refreshAdminState();
+      const admin = isAdmin();
+
+      uploadBox.classList.toggle("hidden", !admin);
+      adminOnlyNote.classList.toggle("show", !admin);
+
+      const query = fileSearch.value.trim();
+      const files = await getFiles(LIBRARY, BOOK_YEAR, query);
+
+      if (files.length === 0) {
+        fileItems.innerHTML = query
+          ? `<p class="empty-msg">No books match “${query}”.</p>`
+          : '<p class="empty-msg">No books uploaded yet.</p>';
+        return;
+      }
+
+      for (const file of files) {
+        const fileItem = document.createElement("div");
+        fileItem.classList.add("file-item");
+        const deleteBtn = admin
+          ? `<button type="button" class="delete-btn" data-id="${file.id}">Delete</button>`
+          : "";
+        fileItem.innerHTML = `
+          <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-type">${formatFileType(file.type, file.name)}</div>
+          </div>
+          <div class="file-actions">
+            <a href="${file.url}" download="${file.name}" class="download-btn">Download</a>
+            ${deleteBtn}
+          </div>
+        `;
+        fileItems.appendChild(fileItem);
+      }
+
+      fileItems.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            await deleteFile(btn.dataset.id);
+            renderFiles();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    window.onAdminAuthChange = function () {
+      renderFiles().catch(() => {});
+    };
+
+    fileSearch.addEventListener("input", function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        renderFiles().catch((err) => {
+          fileItems.innerHTML = `<p class="empty-msg">${err.message}</p>`;
+        });
+      }, 250);
+    });
+
+    fileUpload.addEventListener("change", async function () {
+      try {
+        for (const file of this.files) {
+          await saveFile(LIBRARY, BOOK_YEAR, file);
+        }
+        this.value = "";
+        renderFiles();
+      } catch (err) {
+        alert(err.message + "\n\nAdmin login is required to add books.");
+      }
+    });
+
+    renderFiles().catch((err) => {
+      fileItems.innerHTML =
+        `<p class="empty-msg">Could not load books from Supabase. ${err.message || ""} Run <code>supabase-setup.sql</code> in the Supabase SQL Editor if you have not yet.</p>`;
+    });
+  </script>
+
+</body>
+</html>

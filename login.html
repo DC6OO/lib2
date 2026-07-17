@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .login-card {
+      max-width: 420px;
+      margin: 48px auto;
+      padding: 28px 24px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-card h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      text-align: center;
+      color: #222;
+    }
+
+    .login-card p {
+      margin: 0 0 22px;
+      text-align: center;
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .login-card label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .login-card input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    }
+
+    .login-card button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .login-card button:hover {
+      background: #0056b3;
+    }
+
+    .login-card button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .login-error {
+      display: none;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: #fdecea;
+      color: #b02a37;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar" aria-label="Main">
+      <a class="nav-brand" href="index.html">Digital Library</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="soft.html">SOFTWARE</a>
+        <a href="en.html">ENGINEERING</a>
+        <a href="BIT.html">BIT</a>
+        <a href="sybe.html">CYBER SECURITY</a>
+        <a href="books.html">BOOKS</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="login-card">
+    <h1>Admin Login</h1>
+    <p>Enter the admin password to upload or delete documents.</p>
+    <div id="loginError" class="login-error" role="alert"></div>
+    <form id="loginForm">
+      <label for="password">Password</label>
+      <input id="password" type="password" required autocomplete="current-password" autofocus />
+      <button type="submit" id="loginBtn">Log in</button>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="storage.js"></script>
+  <script src="nav.js"></script>
+  <script>
+    const form = document.getElementById("loginForm");
+    const errorBox = document.getElementById("loginError");
+    const loginBtn = document.getElementById("loginBtn");
+
+    refreshAdminState().then((ok) => {
+      if (ok) location.href = "index.html";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorBox.classList.remove("show");
+      errorBox.textContent = "";
+      loginBtn.disabled = true;
+
+      try {
+        await adminLogin(document.getElementById("password").value);
+        location.href = "index.html";
+      } catch (err) {
+        errorBox.textContent = err.message || "Login failed.";
+        errorBox.classList.add("show");
+        loginBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

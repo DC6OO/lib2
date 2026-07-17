@@ -1,0 +1,331 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #e8eef5;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background: #e8eef5;
+  position: relative;
+}
+
+/* Moving floating shapes behind page content */
+.moving-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.moving-bg span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.moving-bg span:nth-child(1) {
+  width: 42vw;
+  height: 42vw;
+  max-width: 420px;
+  max-height: 420px;
+  left: -8%;
+  top: 10%;
+  background: rgba(0, 123, 255, 0.35);
+  animation: floatA 14s ease-in-out infinite;
+}
+
+.moving-bg span:nth-child(2) {
+  width: 36vw;
+  height: 36vw;
+  max-width: 360px;
+  max-height: 360px;
+  right: -6%;
+  top: 5%;
+  background: rgba(34, 34, 34, 0.18);
+  animation: floatB 18s ease-in-out infinite;
+}
+
+.moving-bg span:nth-child(3) {
+  width: 48vw;
+  height: 48vw;
+  max-width: 480px;
+  max-height: 480px;
+  left: 25%;
+  bottom: -15%;
+  background: rgba(0, 123, 255, 0.22);
+  animation: floatC 16s ease-in-out infinite;
+}
+
+.moving-bg span:nth-child(4) {
+  width: 28vw;
+  height: 28vw;
+  max-width: 280px;
+  max-height: 280px;
+  right: 15%;
+  bottom: 20%;
+  background: rgba(255, 193, 7, 0.28);
+  animation: floatD 12s ease-in-out infinite;
+}
+
+.moving-bg span:nth-child(5) {
+  width: 20vw;
+  height: 20vw;
+  max-width: 200px;
+  max-height: 200px;
+  left: 55%;
+  top: 40%;
+  background: rgba(0, 123, 255, 0.2);
+  animation: floatE 20s ease-in-out infinite;
+}
+
+@keyframes floatA {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(35vw, 18vh) scale(1.15); }
+  66%  { transform: translate(12vw, 45vh) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes floatB {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-30vw, 25vh) scale(1.1); }
+  66%  { transform: translate(-15vw, 50vh) scale(0.85); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes floatC {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-25vw, -30vh) scale(1.2); }
+  66%  { transform: translate(20vw, -15vh) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes floatD {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(-20vw, -20vh) scale(1.25); }
+  50%  { transform: translate(-35vw, 10vh) scale(1); }
+  75%  { transform: translate(-10vw, 25vh) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes floatE {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-25vw, -20vh) scale(1.3); }
+  100% { transform: translate(0, 0); }
+}
+
+.site-header,
+.container,
+.home-hero,
+main {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moving-bg span {
+    animation: none;
+  }
+}
+
+/* ——— Top navigation ——— */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #222;
+}
+
+.navbar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nav-brand {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #ffc107;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-menu a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 6px 0;
+  position: relative;
+}
+
+.nav-menu a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background-color: #ffc107;
+  transition: width 0.3s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a:focus-visible {
+  color: white;
+  outline: none;
+}
+
+.nav-menu a:hover::after,
+.nav-menu a:focus-visible::after,
+.nav-menu a[aria-current="page"]::after {
+  width: 100%;
+}
+
+.nav-menu a[aria-current="page"] {
+  color: white;
+}
+
+/* ——— Mobile: hamburger dropdown ——— */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-menu {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 0 12px;
+    border-top: 1px solid #444;
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+
+  .nav-menu a {
+    padding: 14px 8px;
+    font-size: 16px;
+    border-bottom: 1px solid #333;
+  }
+
+  .nav-menu a::after {
+    display: none;
+  }
+
+  .nav-menu a:active {
+    background: #333;
+    color: #ffc107;
+  }
+}
+
+/* ——— File list layout (keeps Download inside cards on mobile) ——— */
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.file-item .file-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.file-item .file-name,
+.file-item .file-type {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.file-item .file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+
+.file-item .download-btn,
+.file-item .delete-btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .file-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .file-item .file-actions {
+    width: 100%;
+  }
+
+  .file-item .file-actions .download-btn,
+  .file-item .file-actions .delete-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
